@@ -15,21 +15,25 @@ bind_rows(lapply(
 		line_n = col_character()
 	)
 )) %>%
-	# Add index to restore original ordering after summarization.
-	mutate(idx = 1:n()) %>%
+	# Add an index to the original lines, in order to restore original
+	# ordering after summarization. This also disambiguates cases of
+	# duplicate line numbers: we consider it a line break whenever word_n
+	# does not increase--otherwise all the words in the lines with repeated
+	# line numbers would be considered part of one big line.
+	mutate(idx = cumsum(replace_na(
+		!(work == lag(work) & book_n == lag(book_n) & line_n == lag(line_n) & word_n > lag(word_n)),
+	TRUE))) %>%
 
 	# Concatenate the metrical_shape column for all words in each line, in order.
-	# XXX: concatenates lines with duplicate line numbers.
-	group_by(work, book_n, line_n) %>%
+	group_by(work, book_n, line_n, idx) %>%
 	summarize(
-		across(c(idx, scanned, line_text), first),
+		across(c(scanned, line_text), first),
 		line_metrical_shape = paste0(metrical_shape, collapse = ""),
 		.groups = "drop"
 	) %>%
 
 	# Restore original ordering.
 	arrange(idx) %>%
-	mutate(idx = NULL) %>%
 
 	# Put columns in a nice order.
 	select(work, book_n, line_n, scanned, line_metrical_shape, line_text) %>%
