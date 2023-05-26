@@ -1,5 +1,5 @@
 all: \
-	hermann-filtered.csv \
+	hermann-filtered.speaker.csv \
 	break_rates.csv \
 	break_rates_over_time.png \
 	breaks_vs_transgression_rates.png \
@@ -9,6 +9,11 @@ all: \
 hermann-filtered.csv: .EXTRA_PREREQS = hermann-filter.py
 hermann-filtered.csv: sedes/joined.all.csv
 	./hermann-filter.py "$<" > "$@"
+.INTERMEDIATE: hermann-filtered.csv
+
+hermann-filtered.speaker.csv: .EXTRA_PREREQS = add-dices-speeches.py
+hermann-filtered.speaker.csv: hermann-filtered.csv dices/data/1_0/speeches_*
+	./add-dices-speeches.py dices/data/1_0 "$<" > "$@"
 
 break_rates.csv \
 break_rates_over_time.png \
