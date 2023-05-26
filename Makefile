@@ -1,9 +1,14 @@
 all: \
+	hermann-filtered.csv \
 	break_rates.csv \
 	break_rates_over_time.png \
 	breaks_vs_transgression_rates.png \
 	line_metrical_shape.csv
 .PHONY: all
+
+hermann-filtered.csv: .EXTRA_PREREQS = hermann-filter.py
+hermann-filtered.csv: sedes/joined.all.csv
+	./hermann-filter.py "$<" > "$@"
 
 break_rates.csv \
 break_rates_over_time.png \
