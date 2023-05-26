@@ -1,4 +1,4 @@
-work,book_n,line_n,word_n,word,lemma,sedes,metrical_shape,line_text,x,z,caesura_word_n,word_position,enclitic,breaks_hb_schein,dices_speaker,dices_is_speech
+work,book_n,line_n,word_n,word,lemma,sedes,metrical_shape,line_text,x,z,caesura_word_n,word_position,enclitic,breaks_hb_schein,speaker,is_speech
 Hom.Hymn,1,5,6,σε,σύ,8,⏑,"ἄλλοι δ’ ἐν Θήβῃσιν,  ἄναξ, σε λέγουσι γενέσθαι,",107,-1.58238477785209,7,Neither,Enclitic,Yes,narrator,No
 Hom.Hymn,1,5,7,λέγουσι,λέγω,8.5,⏑–⏑,"ἄλλοι δ’ ἐν Θήβῃσιν,  ἄναξ, σε λέγουσι γενέσθαι,",1,-1.93881421461496,7,Neither,Non-enclitic,Yes,narrator,No
 Hom.Hymn,2,17,5,ὄρουσεν,ὀρούω,6.5,⏑–⏑,"Νύσιον ἂμ πεδίον, τῇ ὄρουσεν ἄναξ Πολυδέγμων",1,-2.13686089073792,6,Neither,Non-enclitic,Yes,narrator,No
