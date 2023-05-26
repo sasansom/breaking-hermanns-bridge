@@ -1,3 +1,10 @@
+all: \
+	break_rates.csv \
+	break_rates_over_time.png \
+	breaks_vs_transgression_rates.png \
+	line_metrical_shape.csv
+.PHONY: all
+
 break_rates.csv \
 break_rates_over_time.png \
 breaks_vs_transgression_rates.png \
