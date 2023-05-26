@@ -10,7 +10,8 @@ It is used to annotate
 breaking-hermanns-bridge/dices$ (cd ~/dices && git archive --format tar 6fc7c12b361029523f39055f0b09fb4c14594747 README.md LICENSE data/1_0/) | tar -xf -
 ```
 
-TODO:
+## TODO
+
 * Document creation of HB_Database_Predraft.csv from SEDES, Perseus, and DICES.
 * Have alternate Iliad 9.394 represented in the data.
 * Compare lists of transgressions in Iliad and Odyssey with [Abritta 2018](https://empgriegos.wordpress.com/datos-experimentales/sobre-las-violaciones-del-puente-de-hermann/).
