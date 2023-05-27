@@ -64,7 +64,7 @@ break_rates <- data %>%
 
 	# Manually add 1 to the count for the Iliad to account for 9.394.
 	# TODO: make this be represented directly in the data.
-	mutate(across(c(num_breaks, num_transgressions), ~ .x + (work == "Il."))) %>%
+	mutate(across(c(num_breaks), ~ .x + (work == "Il."))) %>%
 
 	# Join with table of per-work metadata.
 	left_join(WORKS, by = c("work")) %>%
