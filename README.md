@@ -13,4 +13,3 @@ breaking-hermanns-bridge/dices$ (cd ~/dices && git archive --format tar f1b50a8f
 ## TODO
 
 * Document creation of HB_Database_Predraft.csv from SEDES, Perseus, and DICES.
-* Compare lists of transgressions in Iliad and Odyssey with [Abritta 2018](https://empgriegos.wordpress.com/datos-experimentales/sobre-las-violaciones-del-puente-de-hermann/).
