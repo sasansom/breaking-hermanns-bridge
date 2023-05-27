@@ -22,7 +22,8 @@ read_rectangular <- function(sheet, range) {
 abritta <- bind_rows(
 	read_rectangular("Lista completa Iliada", "A1:BC24") %>% mutate(work = "Il."),
 	read_rectangular("Lista completa Odisea", "A1:AS24") %>% mutate(work = "Od.")
-)
+) %>%
+	relocate(work, book_n, line_n)
 
 ours <- read_csv(
 	"HB_Database_Predraft.csv",
@@ -32,10 +33,6 @@ ours <- read_csv(
 		line_n = col_character()
 	)
 ) %>%
-	mutate(
-		across(c(breaks_hb_schein, is_speech), ~ recode(.x, "Yes" = TRUE, "No" = FALSE)),
-		enclitic = recode(enclitic, "Enclitic" = TRUE, `Non-enclitic` = FALSE)
-	) %>%
 	# Keep one representative row per line of verse.
 	filter(word_n == caesura_word_n) %>%
 	filter(work %in% c("Il.", "Od."))
