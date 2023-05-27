@@ -39,6 +39,17 @@ data <- read_csv(
 		book_n = as_factor(sprintf("%s%s", work, book_n))
 	)
 
+# Sanity check that some columns that are supposed to be constant within a line
+# are actually constant.
+inconsistent <- data %>%
+	group_by(work, book_n, line_n) %>%
+	summarize(across(c(caesura_word_n, breaks_hb_schein, speaker, is_speech), ~ length(unique(.x))), .groups = "drop") %>%
+	filter(caesura_word_n != 1 | breaks_hb_schein != 1 | speaker != 1 | is_speech != 1)
+if (nrow(inconsistent) != 0) {
+	print(inconsistent)
+	stop()
+}
+
 break_rates <- data %>%
 	# Keep one representative row per line of verse.
 	filter(word_n == caesura_word_n) %>%
