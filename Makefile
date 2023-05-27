@@ -2,7 +2,7 @@ all: \
 	hermann-filtered.speaker.csv \
 	break_rates.csv \
 	break_rates_over_time.png \
-	breaks_vs_transgression_rates.png \
+	breaks_vs_caesurae_rates.png \
 	line_metrical_shape.csv
 .PHONY: all
 
@@ -17,11 +17,11 @@ hermann-filtered.speaker.csv: hermann-filtered.csv dices/data/1_0/speeches_*
 
 break_rates.csv \
 break_rates_over_time.png \
-breaks_vs_transgression_rates.png \
+breaks_vs_caesurae_rates.png \
 : .EXTRA_PREREQS = HB_Database_Predraft.r
 break_rates.csv \
 break_rates_over_time.png \
-breaks_vs_transgression_rates.png \
+breaks_vs_caesurae_rates.png \
 &: HB_Database_Predraft.csv
 	Rscript HB_Database_Predraft.r
 

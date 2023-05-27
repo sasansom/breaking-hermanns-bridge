@@ -58,7 +58,7 @@ break_rates <- data %>%
 	group_by(work) %>%
 	summarize(
 		num_breaks = sum(breaks_hb_schein),
-		num_transgressions = n(),
+		num_caesurae = n(),
 		.groups = "drop"
 	) %>%
 
@@ -69,23 +69,23 @@ break_rates <- data %>%
 	# then ascending by work name.
 	arrange(desc(num_breaks / num_lines), date, work_name)
 
-# Output development table of break rates and transgression rates.
+# Output development table of break rates and caesura rates.
 break_rates %>%
 	transmute(
 		`work` = work,
 		`B` = num_breaks,
-		`T` = num_transgressions,
+		`C` = num_caesurae,
 		`L` = num_lines,
 		`B/L%` = sprintf("%.3f%%", 100 * num_breaks / num_lines),
-		`B/T%` = sprintf("%.3f%%", 100 * num_breaks / num_transgressions),
-		`T/L%` = sprintf("%.3f%%", 100 * num_transgressions / num_lines),
+		`B/C%` = sprintf("%.3f%%", 100 * num_breaks / num_caesurae),
+		`C/L%` = sprintf("%.3f%%", 100 * num_caesurae / num_lines),
 	)
 
-# Scatterplot of breaks per transgression and transgressions per line.
+# Scatterplot of breaks per caesura and caesurae per line.
 p <- ggplot(break_rates,
 	aes(
-		x = num_breaks / num_transgressions,
-		y = num_transgressions / num_lines,
+		x = num_breaks / num_caesurae,
+		y = num_caesurae / num_lines,
 		label = work
 	)
 ) +
@@ -95,25 +95,25 @@ p <- ggplot(break_rates,
 
 	scale_x_continuous(
 		labels = scales::label_percent(accuracy = 1.0),
-		breaks = seq(0, max(with(break_rates, num_breaks / num_transgressions)), 0.02)
+		breaks = seq(0, max(with(break_rates, num_breaks / num_caesurae)), 0.02)
 	) +
 	scale_y_continuous(
 		labels = scales::label_percent(accuracy = 1.0),
-		breaks = seq(0, max(with(break_rates, num_transgressions / num_lines)), 0.02)
+		breaks = seq(0, max(with(break_rates, num_caesurae / num_lines)), 0.02)
 	) +
 	coord_fixed(
 		# Make room for labels at the top and right.
-		xlim = c(0, max(with(break_rates, num_breaks / num_transgressions)) + 0.015),
-		ylim = c(0, max(with(break_rates, num_transgressions / num_lines)) + 0.002),
+		xlim = c(0, max(with(break_rates, num_breaks / num_caesurae)) + 0.015),
+		ylim = c(0, max(with(break_rates, num_caesurae / num_lines)) + 0.002),
 		expand = FALSE,
 		clip = "off"
 	) +
 	labs(
-		x = "rate of breaks per transgression",
-		y = "rate of transgressions per line"
+		x = "rate of breaks per caesura",
+		y = "rate of caesurae per line"
 	) +
 	theme_minimal()
-ggsave("breaks_vs_transgression_rates.png", p, width = 7, height = 4)
+ggsave("breaks_vs_caesurae_rates.png", p, width = 7, height = 4)
 
 # Plot of breaks per line over time.
 p <- ggplot(break_rates,
