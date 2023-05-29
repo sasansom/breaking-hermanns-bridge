@@ -96,6 +96,18 @@ cat("breaks/quasi-breaks in speech/not-speech:\n")
 table(data %>%
 	filter(word_n == caesura_word_n) %>%
 	select(breaks_hb_schein, is_speech))
+cat("frequency of breaks by speaker:")
+speaker_freq <- data %>%
+	filter(word_n == caesura_word_n & breaks_hb_schein) %>%
+	group_by(speaker) %>% mutate(n = n()) %>% ungroup() %>%
+	select(n, speaker, work, book_n, line_n) %>%
+	arrange(desc(n), speaker, work, book_n, line_n)
+print(speaker_freq, n = 200)
+print(speaker_freq %>%
+	group_by(speaker) %>%
+	summarize(n = n(), .groups = "drop") %>%
+	arrange(desc(n), speaker),
+	n = 50)
 
 # Scatterplot of breaks per caesura and caesurae per line.
 p <- ggplot(break_rates,
