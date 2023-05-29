@@ -35,8 +35,7 @@ data <- read_csv(
 ) %>%
 	mutate(
 		across(c(breaks_hb_schein, is_speech), ~ recode(.x, "Yes" = TRUE, "No" = FALSE)),
-		enclitic = recode(enclitic, "Enclitic" = TRUE, `Non-enclitic` = FALSE),
-		book_n = as_factor(sprintf("%s%s", work, book_n))
+		enclitic = recode(enclitic, "Enclitic" = TRUE, `Non-enclitic` = FALSE)
 	)
 
 # Sanity check that some columns that are supposed to be constant within a line
