@@ -167,12 +167,18 @@ ggsave("break_rates_over_time.png", p, width = 7, height = 3)
 # Output publication table of breaks per work.
 break_rates %>%
 	transmute(
-		`Breaks` = num_breaks,
-		`/` = "/",
-		`Lines` = num_lines,
-		`Percentage` = sprintf("%.3f%%", 100 * num_breaks / num_lines),
 		`Work` = work_name,
-		`One break per` = ifelse(is.infinite(num_lines / num_breaks), "\u2013", sprintf("%.f", num_lines / num_breaks))
+		`Lines` = scales::comma(num_lines, accuracy = 1),
+		`Caesurae` = scales::comma(num_caesurae, accuracy = 1),
+		`Breaks` = scales::comma(num_breaks, accuracy = 1),
+		`Breaks/Line` = ifelse(num_breaks == 0,
+			sprintf("\u00a0%.g%%", 100 * num_breaks / num_lines),
+			sprintf("\u00a0%.2f%%", 100 * num_breaks / num_lines)
+		),
+		`_` = ifelse(num_breaks == 0,
+			"",
+			sprintf("(1\u00a0per\u00a0%s)", scales::comma(num_lines / num_breaks, accuracy = 1))
+		),
 	) %>%
 
-	write_csv("break_rates.csv")
+	write_csv("break_rates.csv") %>% print()

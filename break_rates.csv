@@ -1,13 +1,13 @@
-Breaks,/,Lines,Percentage,Work,One break per
-5,/,1155,0.433%,Aratus’ Phaenomena,231
-8,/,2342,0.342%,Homeric Hymns,293
-7,/,2527,0.277%,Theocritus’ Idylls,361
-41,/,15683,0.261%,Iliad,383
-29,/,12107,0.240%,Odyssey,417
-1,/,479,0.209%,Shield,479
-1,/,831,0.120%,Works and Days,831
-10,/,8801,0.114%,Quintus of Smyrna’s Fall of Troy,880
-1,/,1042,0.096%,Theogony,1042
-0,/,5834,0.000%,Argonautica,–
-0,/,941,0.000%,Callimachus’ Hymns,–
-0,/,21356,0.000%,Nonnus’ Dionysiaca,–
+Work,Lines,Caesurae,Breaks,Breaks/Line,_
+Aratus’ Phaenomena,"1,155",74,5, 0.43%,(1 per 231)
+Homeric Hymns,"2,342",78,8, 0.34%,(1 per 293)
+Theocritus’ Idylls,"2,527",132,7, 0.28%,(1 per 361)
+Iliad,"15,683",726,41, 0.26%,(1 per 383)
+Odyssey,"12,107",573,29, 0.24%,(1 per 417)
+Shield,479,21,1, 0.21%,(1 per 479)
+Works and Days,831,50,1, 0.12%,(1 per 831)
+Quintus of Smyrna’s Fall of Troy,"8,801",402,10, 0.11%,(1 per 880)
+Theogony,"1,042",40,1, 0.10%,"(1 per 1,042)"
+Argonautica,"5,834",199,0, 0%,
+Callimachus’ Hymns,941,29,0, 0%,
+Nonnus’ Dionysiaca,"21,356",159,0, 0%,
