@@ -71,14 +71,20 @@ break_rates <- data %>%
 
 # Output development table of break rates and caesura rates.
 break_rates %>%
+	bind_rows(break_rates %>%
+		summarize(
+			across(c(num_breaks, num_caesurae, num_lines), sum),
+			work = "total"
+		)
+	) %>%
 	transmute(
 		`work` = work,
-		`B` = num_breaks,
-		`C` = num_caesurae,
 		`L` = num_lines,
-		`B/L%` = sprintf("%.3f%%", 100 * num_breaks / num_lines),
-		`B/C%` = sprintf("%.3f%%", 100 * num_breaks / num_caesurae),
+		`C` = num_caesurae,
+		`B` = num_breaks,
 		`C/L%` = sprintf("%.3f%%", 100 * num_caesurae / num_lines),
+		`B/C%` = sprintf("%.3f%%", 100 * num_breaks / num_caesurae),
+		`B/L%` = sprintf("%.3f%%", 100 * num_breaks / num_lines),
 	)
 
 # Scatterplot of breaks per caesura and caesurae per line.
