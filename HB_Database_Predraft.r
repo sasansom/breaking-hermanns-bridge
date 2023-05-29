@@ -87,6 +87,13 @@ break_rates %>%
 		`B/L%` = sprintf("%.3f%%", 100 * num_breaks / num_lines),
 	)
 
+cat("lines without and with enclitic:")
+table((data %>%
+	filter(breaks_hb_schein) %>%
+	group_by(work, book_n, line_n) %>%
+	summarize(enclitic = any(enclitic), .groups = "drop")
+)$enclitic)
+
 # Scatterplot of breaks per caesura and caesurae per line.
 p <- ggplot(break_rates,
 	aes(
