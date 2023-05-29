@@ -93,6 +93,10 @@ table((data %>%
 	group_by(work, book_n, line_n) %>%
 	summarize(enclitic = any(enclitic), .groups = "drop")
 )$enclitic)
+cat("breaks/quasi-breaks in speech/not-speech:\n")
+table(data %>%
+	filter(word_n == caesura_word_n) %>%
+	select(breaks_hb_schein, is_speech))
 
 # Scatterplot of breaks per caesura and caesurae per line.
 p <- ggplot(break_rates,
