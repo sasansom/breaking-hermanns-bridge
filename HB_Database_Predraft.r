@@ -35,7 +35,11 @@ data <- read_csv(
 ) %>%
 	mutate(
 		across(c(breaks_hb_schein, is_speech), ~ recode(.x, "Yes" = TRUE, "No" = FALSE)),
-		enclitic = recode(enclitic, "Enclitic" = TRUE, `Non-enclitic` = FALSE)
+		enclitic = recode(enclitic, "Enclitic" = TRUE, `Non-enclitic` = FALSE),
+		# Set book_n to NA for works that don't have separate books.
+		# https://github.com/sasansom/sedes/issues/82
+		book_n = case_when(work %in% c("Sh.", "Theog.", "W.D.", "Phaen.") ~ NA_character_, TRUE ~ book_n),
+		book_n = as.numeric(book_n)
 	)
 
 # Sanity check that some columns that are supposed to be constant within a line
