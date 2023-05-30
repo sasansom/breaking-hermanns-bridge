@@ -2,6 +2,7 @@ all: \
 	hermann-filtered.speaker.csv \
 	break_rates.csv \
 	break_rates_over_time.png \
+	clusters.png \
 	breaks_vs_caesurae_rates.png \
 	speaker_frequency.csv \
 	line_metrical_shape.csv \
@@ -20,10 +21,12 @@ hermann-filtered.speaker.csv: hermann-filtered.csv dices/data/1_0/speeches_*
 break_rates.csv \
 break_rates_over_time.png \
 breaks_vs_caesurae_rates.png \
+clusters.png \
 speaker_frequency.csv \
 : .EXTRA_PREREQS = HB_Database_Predraft.r
 break_rates.csv \
 break_rates_over_time.png \
+clusters.png \
 breaks_vs_caesurae_rates.png \
 speaker_frequency.csv \
 &: HB_Database_Predraft.csv

@@ -1,4 +1,5 @@
 library("tidyverse")
+library("cowplot")
 
 WORKS <- tribble(
 	~work,         ~num_lines, ~date, ~work_name,
@@ -252,3 +253,101 @@ break_rates %>%
 	) %>%
 
 	write_csv("break_rates.csv") %>% print()
+
+# Dot plot of number of breaks per book in selected works.
+cluster_graphs <- list()
+cluster_specs <- list(
+	list(
+		work = "Il.",
+		books = 1:24,
+		book_names = c("Book 1", as.character(2:24)),
+		label = expression(italic("Iliad")),
+		w = 8
+	),
+	list(
+		work = "Od.",
+		books = 1:24,
+		book_names = c("Book 1", as.character(2:24)),
+		label = expression(italic("Odyssey")),
+		w = 8
+	),
+	list(
+		work = "Hom.Hymn",
+		books = 1:33,
+		book_names = sprintf("%s %2d", c(
+			"To Dionysus",
+			"To Demeter",
+			"To Apollo",
+			"To Hermes",
+			"To Aphrodite",
+			"To Aphrodite",
+			"To Dionysus",
+			"To Ares",
+			"To Artemis",
+			"To Aphrodite",
+			"To Athena",
+			"To Hera",
+			"To Demeter",
+			"To the mother of the gods",
+			"To Heracles",
+			"To Asclepius",
+			"To the Dioscuri",
+			"To Hermes",
+			"To Pan",
+			"To Hephaestus",
+			"To Apollo",
+			"To Poseidon",
+			"To Zeus",
+			"To Hestia",
+			"To the Muses and Apollo",
+			"To Dionysus",
+			"To Artemis",
+			"To Athena",
+			"To Hestia",
+			"To Gaia, mother of all",
+			"To Helios",
+			"To Selene",
+			"To the Dioscuri"
+		), 1:33),
+		label = expression(italic("Hom. Hymns")),
+		w = 16
+	),
+	list(
+		work = "Theoc.",
+		books = c(1:7, 9:27), # Omit Idyll 8, which is elegaic.
+		book_names = c("Idyll 1", as.character(2:7), as.character(9:27)),
+		label = expression(italic("Theoc.")),
+		w = 6
+	),
+	list(
+		work = "Q.S.",
+		books = 1:14,
+		book_names = c("Book 1", as.character(2:14)),
+		label = expression(italic("Q.S.")),
+		w = 6
+	)
+)
+for (g in cluster_specs) {
+	cluster <- data %>%
+		filter(work == g$work) %>%
+		filter(word_n == caesura_word_n & breaks_hb_schein) %>%
+		mutate(book_n = factor(book_n, g$books))
+	cluster_graphs[[length(cluster_graphs) + 1]] <- ggplot(cluster) +
+		geom_dotplot(aes(book_n), method = "histodot", binwidth = 1, dotsize = 0.8, drop = FALSE) +
+		scale_x_discrete(
+			limits = rev(factor(1:33)),
+			breaks = rev(levels(cluster$book_n)),
+			labels = rev(g$book_names)
+		) +
+		scale_y_continuous(NULL, breaks = NULL, expand = expansion(0, 0.05)) +
+		coord_flip() +
+		labs(x = NULL, y = NULL, title = g$label)
+}
+ggsave("clusters.png",
+	plot_grid(
+		plotlist = cluster_graphs,
+		nrow = 1, align = "h",
+		rel_widths = unlist(lapply(cluster_specs, function(g) g$w))
+	),
+	width = 6, height = 4
+)
