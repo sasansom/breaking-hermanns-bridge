@@ -24,6 +24,15 @@ PERIODS <- tribble(
 	  -100,  500, "Imperial",    # https://en.wikipedia.org/wiki/Classical_antiquity#Hellenistic_period_(323%E2%80%93146_BC)
 )
 
+FONT_FAMILY <- "Times"
+theme_set(
+        theme_minimal(
+                base_family = FONT_FAMILY,
+                base_size = 10
+        )
+)
+update_geom_defaults("text", aes(family = FONT_FAMILY))
+
 # Read input and tidy.
 data <- read_csv(
 	"HB_Database_Predraft.csv",
@@ -174,8 +183,7 @@ p <- ggplot(break_rates,
 	labs(
 		x = "rate of breaks per caesura",
 		y = "rate of caesurae per line"
-	) +
-	theme_minimal()
+	)
 ggsave("breaks_vs_caesurae_rates.png", p, width = 7, height = 4)
 
 # Plot of breaks per line over time.
@@ -223,8 +231,7 @@ p <- ggplot(break_rates,
 	labs(
 		x = "year",
 		y = "rate of breaks per line"
-	) +
-	theme_minimal()
+	)
 ggsave("break_rates_over_time.png", p, width = 7, height = 3)
 
 # Output publication table of breaks per work.
