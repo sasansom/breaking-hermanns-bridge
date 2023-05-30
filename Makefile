@@ -4,7 +4,8 @@ all: \
 	break_rates_over_time.png \
 	breaks_vs_caesurae_rates.png \
 	speaker_frequency.csv \
-	line_metrical_shape.csv
+	line_metrical_shape.csv \
+	zscore_by_sedes.png
 .PHONY: all
 
 hermann-filtered.csv: .EXTRA_PREREQS = hermann-filter.py
@@ -31,5 +32,9 @@ speaker_frequency.csv \
 line_metrical_shape.csv: .EXTRA_PREREQS = line_metrical_shape.r
 line_metrical_shape.csv: sedes/corpus/*.csv
 	Rscript line_metrical_shape.r $^ > "$@"
+
+zscore_by_sedes.png: .EXTRA_PREREQS = zscore.r
+zscore_by_sedes.png&: sedes/joined.all.csv
+	Rscript zscore.r "$<"
 
 .DELETE_ON_ERROR:
