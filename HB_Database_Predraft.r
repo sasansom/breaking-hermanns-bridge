@@ -100,18 +100,49 @@ cat("breaks/quasi-breaks in speech/not-speech:\n")
 table(data %>%
 	filter(word_n == caesura_word_n) %>%
 	select(breaks_hb_schein, is_speech))
-cat("frequency of breaks by speaker:")
+cat("frequency of breaks by speaker:\n")
 speaker_freq <- data %>%
 	filter(word_n == caesura_word_n & breaks_hb_schein) %>%
 	group_by(speaker) %>% mutate(n = n()) %>% ungroup() %>%
 	select(n, speaker, work, book_n, line_n) %>%
 	arrange(desc(n), speaker, work, book_n, line_n)
 print(speaker_freq, n = 200)
-print(speaker_freq %>%
+
+# Output publication table of speaker frequency.
+speaker_freq %>%
+	# Split apart the speaker and whom they are quoting. Does not handle
+	# more than one level of quoting.
+	mutate(
+		temp = str_split_fixed(speaker, ">", 2),
+		speaker = na_if(temp[,1], ""),
+		quoting = na_if(temp[,2], ""),
+		temp = NULL
+	) %>%
+	arrange(work, as.integer(book_n), as.integer(gsub("^(\\d*).*", "\\1", line_n))) %>%
+	group_by(speaker, work) %>%
+	summarize(
+		n = n(),
+		verses = str_c(sprintf("%s%s%s",
+			ifelse(is.na(book_n), "", sprintf("%s.", book_n)),
+			line_n,
+			ifelse(is.na(quoting), "", sprintf("\u00a0(quoting %s)", quoting))), collapse = ", "),
+		.groups = "drop"
+	) %>%
 	group_by(speaker) %>%
-	summarize(n = n(), .groups = "drop") %>%
-	arrange(desc(n), speaker),
-	n = 50)
+	summarize(
+		n = sum(n),
+		verses = str_c(sprintf("%s\u00a0%s", work, verses), collapse = "; "),
+		.groups = "drop"
+	) %>%
+	arrange(desc(n), speaker) %>%
+	filter(speaker != "narrator") %>%
+	mutate(speaker = recode(speaker, "Aias (son of Telamon)" = "Telamonian Ajax")) %>%
+	transmute(
+		`#` = n,
+		`Speaker` = speaker,
+		`Breaks` = verses
+	) %>%
+	write_csv("speaker_frequency.csv", na = "")
 
 # Scatterplot of breaks per caesura and caesurae per line.
 p <- ggplot(break_rates,
