@@ -1,6 +1,8 @@
 library("tidyverse")
 library("cowplot")
 
+WIDTH <- 6 # in
+
 WORKS <- tribble(
 	~work,         ~num_lines, ~date, ~work_name,
 	"Argon.",            5834,  -350, "Argonautica",
@@ -185,7 +187,7 @@ p <- ggplot(break_rates,
 		x = "rate of breaks per caesura",
 		y = "rate of caesurae per line"
 	)
-ggsave("breaks_vs_caesurae_rates.png", p, width = 7, height = 4)
+ggsave("breaks_vs_caesurae_rates.png", p, width = WIDTH, height = 3.5)
 
 # Plot of breaks per line over time.
 p <- ggplot(break_rates,
@@ -233,7 +235,7 @@ p <- ggplot(break_rates,
 		x = "year",
 		y = "rate of breaks per line"
 	)
-ggsave("break_rates_over_time.png", p, width = 7, height = 3)
+ggsave("break_rates_over_time.png", p, width = WIDTH, height = 3)
 
 # Output publication table of breaks per work.
 break_rates %>%
