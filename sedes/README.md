@@ -1,6 +1,6 @@
 Copy of preprocessed SEDES corpus files and outputs.
 
-Taken from commit [c08cb6fb](https://github.com/sasansom/sedes/tree/c08cb6fb7e7e68ddb851821e159fcf22dc2452a8),
+Taken from commit [605a27b3](https://github.com/sasansom/sedes/tree/605a27b3af22089379aad22ba96edf113970a7b0.),
 however will one change to line 3.394 in iliad.xml:
 
 ```diff
