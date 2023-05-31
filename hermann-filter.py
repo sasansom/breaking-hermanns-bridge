@@ -66,7 +66,7 @@ def process(r, w):
         except ValueError:
             print(f"missing sedes: {','.join(row.values())!r}", file = sys.stderr)
             continue
-        sedes_end = sedes_begin + metrical_length(row["metrical_shape"])
+        length = metrical_length(row["metrical_shape"])
 
         # Whenever we advance to a new line, output any previous buffer of words
         # that end at sedes 8.5.
@@ -96,12 +96,14 @@ def process(r, w):
                 w.writerows(dict(r, **{"caesura_word_n": caesura_word_n}) for r in pre_buffer)
                 pre_buffer.clear()
             w.writerow(dict(row, **{"caesura_word_n": caesura_word_n}))
-        elif sedes_end == 8.5:
+        elif sedes_begin + length == 8.5 or length == 0:
             # A word at the sedes immediately before the caesura. We will output
             # a row for this word, but we don't yet know what its caesura_word_n
             # should be. Buffer it until we either see a word at 8.5, or enter a
             # different line.
             pre_buffer.append(row)
+        else:
+            pre_buffer.clear()
     caesura_word_n = None
     w.writerows(dict(r, **{"caesura_word_n": caesura_word_n}) for r in pre_buffer)
     pre_buffer.clear()
