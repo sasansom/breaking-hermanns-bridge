@@ -112,15 +112,13 @@ cat("breaks/quasi-breaks in speech/not-speech:\n")
 table(data %>%
 	filter(word_n == caesura_word_n) %>%
 	select(breaks_hb_schein, is_speech))
-cat("frequency of breaks by speaker:\n")
+
+# Output publication table of speaker frequency.
 speaker_freq <- data %>%
 	filter(word_n == caesura_word_n & breaks_hb_schein) %>%
 	group_by(speaker) %>% mutate(n = n()) %>% ungroup() %>%
 	select(n, speaker, work, book_n, line_n) %>%
 	arrange(desc(n), speaker, work, book_n, line_n)
-print(speaker_freq, n = 200)
-
-# Output publication table of speaker frequency.
 speaker_freq %>%
 	# Split apart the speaker and whom they are quoting. Does not handle
 	# more than one level of quoting.
