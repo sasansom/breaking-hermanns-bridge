@@ -114,6 +114,20 @@ table(data %>%
 	select(breaks_hb_schein, is_speech))
 
 # Output publication table of speaker frequency.
+WORK_NAME_ABBREV <- c(
+	"Argon." = "Argon.",
+	"Callim.Hymn" = "Callim.\u00a0Hymn",
+	"Dion." = "Dion.",
+	"Hom.Hymn" = "Hom.\u00a0Hymn",
+	"Il." = "Il.",
+	"Od." = "Od.",
+	"Phaen." = "Phaen.",
+	"Q.S." = "Q.S.",
+	"Sh." = "Sh.",
+	"Theoc." = "Theoc.",
+	"Theog." = "Theog.",
+	"W.D." = "Op."
+)
 speaker_freq <- data %>%
 	filter(word_n == caesura_word_n & breaks_hb_schein) %>%
 	group_by(speaker) %>% mutate(n = n()) %>% ungroup() %>%
@@ -141,7 +155,7 @@ speaker_freq %>%
 	group_by(speaker) %>%
 	summarize(
 		n = sum(n),
-		verses = str_c(sprintf("%s\u00a0%s", work, verses), collapse = "; "),
+		verses = str_c(sprintf("%s\u00a0%s", WORK_NAME_ABBREV[as.character(work)], verses), collapse = "; "),
 		.groups = "drop"
 	) %>%
 	arrange(desc(n), speaker) %>%
