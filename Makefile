@@ -23,7 +23,7 @@ break_rates_over_time.png \
 breaks_vs_caesurae_rates.png \
 clusters.png \
 speaker_frequency.csv \
-: .EXTRA_PREREQS = HB_Database_Predraft.r
+: .EXTRA_PREREQS = HB_Database_Predraft.r sedes/joined.all.csv
 break_rates.csv \
 break_rates_over_time.png \
 clusters.png \

@@ -4,19 +4,19 @@ library("cowplot")
 WIDTH <- 6 # in
 
 WORKS <- tribble(
-	~work,         ~num_lines, ~date, ~work_name,
-	"Argon.",            5834,  -350, "Argonautica",
-	"Callim.Hymn",        941,  -250, "Callimachus’ Hymns",
-	"Dion.",            21356,   450, "Nonnus’ Dionysiaca",
-	"Hom.Hymn",          2342,  -600, "Homeric Hymns",
-	"Il.",              15683,  -750, "Iliad",
-	"Od.",              12107,  -750, "Odyssey",
-	"Phaen.",            1155,  -250, "Aratus’ Phaenomena",
-	"Q.S.",              8801,   350, "Quintus of Smyrna’s Fall of Troy",
-	"Sh.",                479,  -550, "Shield",
-	"Theoc.",            2527,  -250, "Theocritus’ Idylls",
-	"Theog.",            1042,  -750, "Theogony",
-	"W.D.",               831,  -750, "Works and Days",
+	~work,         ~date, ~work_name,
+	"Argon.",       -350, "Argonautica",
+	"Callim.Hymn",  -250, "Callimachus’ Hymns",
+	"Dion.",         450, "Nonnus’ Dionysiaca",
+	"Hom.Hymn",     -600, "Homeric Hymns",
+	"Il.",          -750, "Iliad",
+	"Od.",          -750, "Odyssey",
+	"Phaen.",       -250, "Aratus’ Phaenomena",
+	"Q.S.",          350, "Quintus of Smyrna’s Fall of Troy",
+	"Sh.",          -550, "Shield",
+	"Theoc.",       -250, "Theocritus’ Idylls",
+	"Theog.",       -750, "Theogony",
+	"W.D.",         -750, "Works and Days",
 )
 
 # TODO: fix off-by-one in BCE dates.
@@ -35,6 +35,30 @@ theme_set(
         )
 )
 update_geom_defaults("text", aes(family = FONT_FAMILY))
+
+# Read sedes/joined.all.csv just to get the total number of lines per work.
+num_lines <- read_csv("sedes/joined.all.csv",
+	col_types = cols_only(
+		work = col_factor(),
+		book_n = col_character(),
+		line_n = col_character(),
+		word_n = col_integer()
+	)
+) %>%
+	# Add an index to the original lines, in order to restore original
+	# ordering after summarization. This also disambiguates cases of
+	# duplicate line numbers: we consider it a line break whenever word_n
+	# does not increase--otherwise all the words in the lines with repeated
+	# line numbers would be considered part of the same line.
+	mutate(idx = cumsum(replace_na(
+		!(work == lag(work) & book_n == lag(book_n) & line_n == lag(line_n) & word_n > lag(word_n)),
+	TRUE))) %>%
+	group_by(idx) %>%
+	summarize(
+		across(c(work, book_n, line_n), first),
+		.groups = "drop"
+	) %>%
+	count(work, name = "num_lines")
 
 # Read input and tidy.
 data <- read_csv(
@@ -77,8 +101,9 @@ break_rates <- data %>%
 		.groups = "drop"
 	) %>%
 
-	# Join with table of per-work metadata.
+	# Join with tables of per-work metadata.
 	left_join(WORKS, by = c("work")) %>%
+	left_join(num_lines, by = c("work")) %>%
 
 	# Sort in decreasing order by break rate, then by ascending by date,
 	# then ascending by work name.
