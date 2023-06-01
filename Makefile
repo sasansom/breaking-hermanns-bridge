@@ -6,6 +6,7 @@ all: \
 	breaks_vs_caesurae_rates.png \
 	speaker_frequency.csv \
 	line_metrical_shape.csv \
+	speech_ratio.csv \
 	zscore_by_sedes.png
 .PHONY: all
 
@@ -17,6 +18,14 @@ hermann-filtered.csv: sedes/joined.all.csv
 hermann-filtered.speaker.csv: .EXTRA_PREREQS = add-dices-speeches.py
 hermann-filtered.speaker.csv: hermann-filtered.csv dices/data/1_0/speeches_*
 	./add-dices-speeches.py dices/data/1_0 "$<" > "$@"
+
+sedes/joined.all.speaker.csv: .EXTRA_PREREQS = add-dices-speeches.py
+sedes/joined.all.speaker.csv: sedes/joined.all.csv dices/data/1_0/speeches_*
+	./add-dices-speeches.py dices/data/1_0 "$<" > "$@"
+
+speech_ratio.csv: .EXTRA_PREREQS = speech_ratio.r
+speech_ratio.csv: sedes/joined.all.speaker.csv
+	Rscript speech_ratio.r
 
 break_rates.csv \
 break_rates_over_time.png \
