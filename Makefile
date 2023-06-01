@@ -38,6 +38,6 @@ line_metrical_shape.csv: sedes/corpus/*.csv
 
 zscore_by_sedes.png: .EXTRA_PREREQS = zscore.r
 zscore_by_sedes.png&: sedes/joined.all.csv
-	Rscript zscore.r "$<"
+	Rscript zscore.r
 
 .DELETE_ON_ERROR:
