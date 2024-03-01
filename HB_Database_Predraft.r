@@ -57,8 +57,14 @@ num_lines <- read_csv("sedes/joined.all.csv",
 	summarize(
 		across(c(work, book_n, line_n), first),
 		.groups = "drop"
-	) %>%
-	count(work, name = "num_lines")
+	) %>% mutate(
+		# Set book_n to NA for works that don't have separate books.
+		book_n = case_when(work %in% c("Sh.", "Theog.", "W.D.", "Phaen.") ~ NA_character_, TRUE ~ book_n),
+		book_n = as.numeric(book_n)
+	)
+
+num_lines_by_book <- count(num_lines, work, book_n, name = "num_lines")
+num_lines <- count(num_lines, work, name = "num_lines")
 
 # Read input and tidy.
 data <- read_csv(
@@ -109,6 +115,11 @@ break_rates <- data %>%
 	# then ascending by work name.
 	arrange(desc(num_breaks / num_lines), date, work_name)
 
+break_rate_overall <- (break_rates %>%
+	summarize(num_breaks = sum(num_breaks), num_lines = sum(num_lines)) %>%
+	mutate(rate = num_breaks / num_lines))$rate[[1]]
+print(c("break rate overall", break_rate_overall))
+
 # Output development table of break rates and caesura rates.
 break_rates %>%
 	bind_rows(break_rates %>%
@@ -125,7 +136,28 @@ break_rates %>%
 		`C/L%` = sprintf("%.3f%%", 100 * num_caesurae / num_lines),
 		`B/C%` = sprintf("%.3f%%", 100 * num_breaks / num_caesurae),
 		`B/L%` = sprintf("%.3f%%", 100 * num_breaks / num_lines),
+		binom_p_lt = pbinom(num_breaks, num_lines, break_rate_overall),
 	)
+
+break_rates_by_book <- data %>%
+	# Keep one representative row per line of verse.
+	filter(word_n == caesura_word_n) %>%
+
+	# Count up breaks per work.
+	group_by(work, book_n) %>%
+	summarize(
+		num_breaks = sum(breaks_hb_schein),
+		num_caesurae = n(),
+		.groups = "drop"
+	) %>%
+
+	# Join with tables of per-work metadata.
+	left_join(WORKS, by = c("work")) %>%
+	left_join(num_lines_by_book, by = c("work", "book_n")) %>%
+
+	# Sort in decreasing order by break rate, then by ascending by date,
+	# then ascending by work name.
+	arrange(desc(num_breaks / num_lines), date, work_name)
 
 cat("lines without and with enclitic:")
 table((data %>%
@@ -298,6 +330,25 @@ break_rates %>%
 	) %>%
 
 	write_csv("break_rates.csv") %>% print()
+
+# Output publication table of breaks per book.
+break_rates_by_book %>%
+	mutate(
+		binom_p_ge = pbinom(num_breaks - 1, num_lines, p = break_rate_overall, lower.tail = FALSE),
+	) %>%
+	arrange(binom_p_ge, date, work_name) %>%
+	transmute(
+		`Work` = work,
+		`Book/poem` = book_n,
+		`Lines` = scales::comma(num_lines, accuracy = 1),
+		`Breaks` = scales::comma(num_breaks, accuracy = 1),
+		`Breaks/Line` = ifelse(num_breaks == 0,
+			sprintf("%.g%%", 100 * num_breaks / num_lines),
+			sprintf("%.2f%%", 100 * num_breaks / num_lines)
+		),
+		`Chance of at least this many breaks, assuming random distribution` = sprintf("%.2g%%", 100 * binom_p_ge),
+	) %>%
+	write_csv("break_rates_by_book.csv", na = "") %>% print(n = 100)
 
 # Dot plot of number of breaks per book in selected works.
 cluster_graphs <- list()
