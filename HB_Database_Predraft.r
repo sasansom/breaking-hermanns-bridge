@@ -108,8 +108,10 @@ break_rates <- data %>%
 	) %>%
 
 	# Join with tables of per-work metadata.
+	(function(x) full_join(num_lines, x, by = c("work")))() %>%
+	# Substitute 0 breaks/caesurae for works not represented in data.
+	mutate(across(c(num_breaks, num_caesurae), ~ replace_na(.x, 0))) %>%
 	left_join(WORKS, by = c("work")) %>%
-	left_join(num_lines, by = c("work")) %>%
 
 	# Sort in decreasing order by break rate, then by ascending by date,
 	# then ascending by work name.
@@ -151,9 +153,11 @@ break_rates_by_book <- data %>%
 		.groups = "drop"
 	) %>%
 
-	# Join with tables of per-work metadata.
+	# Join with tables of per-book metadata.
+	(function(x) full_join(num_lines_by_book, x, by = c("work", "book_n")))() %>%
+	# Substitute 0 breaks/caesurae for books not represented in data.
+	mutate(across(c(num_breaks, num_caesurae), ~ replace_na(.x, 0))) %>%
 	left_join(WORKS, by = c("work")) %>%
-	left_join(num_lines_by_book, by = c("work", "book_n")) %>%
 
 	# Sort in decreasing order by break rate, then by ascending by date,
 	# then ascending by work name.
