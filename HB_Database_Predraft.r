@@ -276,6 +276,12 @@ ggsave("break_rates_over_time.png", p, width = WIDTH, height = 3)
 
 # Output publication table of breaks per work.
 break_rates %>%
+	bind_rows(break_rates %>%
+		summarize(
+			across(c(num_breaks, num_caesurae, num_lines), sum),
+			work_name = "total"
+		)
+	) %>%
 	transmute(
 		`Work` = work_name,
 		`Lines` = scales::comma(num_lines, accuracy = 1),
