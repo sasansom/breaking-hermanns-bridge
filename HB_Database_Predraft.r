@@ -310,6 +310,7 @@ speaker_breaks %>%
 		names_glue = "{era}_{.value}",
 	) %>%
 	mutate(
+		across(c(archaic_num_lines, archaic_num_breaks, total_num_lines, total_num_breaks), function(x) replace_na(x, 0)),
 		archaic_binom_p_ge = 1 - pbinom(archaic_num_breaks - 1, archaic_num_lines, break_rate_archaic),
 		  total_binom_p_ge = 1 - pbinom(  total_num_breaks - 1,   total_num_lines, break_rate_overall),
 	) %>%
@@ -318,11 +319,11 @@ speaker_breaks %>%
 		speaker,
 		archaic_num_breaks,
 		archaic_num_lines,
-		archaic_break_rate_pct = sprintf("%.2f%%", 100 * archaic_break_rate),
+		archaic_break_rate_pct = ifelse(is.na(archaic_break_rate), NA, sprintf("%.2f%%", 100 * archaic_break_rate)),
 		archaic_binom_p_ge_pct = sprintf("%.2f%%", 100 * archaic_binom_p_ge),
 		total_num_breaks,
 		total_num_lines,
-		total_break_rate_pct   = sprintf("%.2f%%", 100 * total_break_rate),
+		total_break_rate_pct   = ifelse(is.na(  total_break_rate), NA, sprintf("%.2f%%", 100 * total_break_rate)),
 		total_binom_p_ge_pct   = sprintf("%.2f%%", 100 * total_binom_p_ge),
 		archaic_break_verses,
 		total_break_verses,
