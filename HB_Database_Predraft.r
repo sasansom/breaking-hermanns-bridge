@@ -4,19 +4,19 @@ library("cowplot")
 WIDTH <- 6 # in
 
 WORKS <- tribble(
-	~work,         ~date, ~work_name,
-	"Argon.",       -350, "Argonautica",
-	"Callim.Hymn",  -250, "Callimachus’ Hymns",
-	"Dion.",         450, "Nonnus’ Dionysiaca",
-	"Hom.Hymn",     -600, "Homeric Hymns",
-	"Il.",          -750, "Iliad",
-	"Od.",          -750, "Odyssey",
-	"Phaen.",       -250, "Aratus’ Phaenomena",
-	"Q.S.",          350, "Quintus of Smyrna’s Fall of Troy",
-	"Sh.",          -550, "Shield",
-	"Theoc.",       -250, "Theocritus’ Idylls",
-	"Theog.",       -750, "Theogony",
-	"W.D.",         -750, "Works and Days",
+	~work,         ~date, ~era,          ~work_name,
+	"Argon.",       -350, "hellenistic", "Argonautica",
+	"Callim.Hymn",  -250, "hellenistic", "Callimachus’ Hymns",
+	"Dion.",         450, "imperial",    "Nonnus’ Dionysiaca",
+	"Hom.Hymn",     -600, "archaic",     "Homeric Hymns",
+	"Il.",          -750, "archaic",     "Iliad",
+	"Od.",          -750, "archaic",     "Odyssey",
+	"Phaen.",       -250, "hellenistic", "Aratus’ Phaenomena",
+	"Q.S.",          350, "imperial",    "Quintus of Smyrna’s Fall of Troy",
+	"Sh.",          -550, "archaic",     "Shield",
+	"Theoc.",       -250, "hellenistic", "Theocritus’ Idylls",
+	"Theog.",       -750, "archaic",     "Theogony",
+	"W.D.",         -750, "archaic",     "Works and Days",
 )
 
 # TODO: fix off-by-one in BCE dates.
@@ -334,6 +334,25 @@ break_rates %>%
 	) %>%
 
 	write_csv("break_rates.csv") %>% print()
+
+# Output table of breaks per era.
+cat("\nBreak rates by era:")
+summarize_era <- function(eras) {
+	tibble(
+		era = stringi::stri_join(eras, collapse="|"),
+		break_rates %>% filter(era %in% eras) %>%
+			summarize(across(c(num_breaks, num_caesurae, num_lines), sum)),
+	)
+}
+bind_rows(
+	summarize_era(c("archaic")),
+	summarize_era(c("hellenistic")),
+	summarize_era(c("hellenistic", "archaic")),
+	summarize_era(c("imperial")),
+	summarize_era(c("imperial", "hellenistic", "archaic")),
+) %>% mutate(
+	lines_per_break = sprintf("%.f", num_lines / num_breaks),
+) %>% print() %>% write_csv("break_rates_by_era.csv")
 
 # Output publication table of breaks per book.
 break_rates_by_book %>%

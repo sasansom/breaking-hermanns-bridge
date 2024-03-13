@@ -1,0 +1,6 @@
+era,num_breaks,num_caesurae,num_lines,lines_per_break
+archaic,81,1485,32484,401
+hellenistic,12,432,10434,870
+hellenistic|archaic,93,1917,42918,461
+imperial,10,559,30059,3006
+imperial|hellenistic|archaic,103,2476,72977,709
