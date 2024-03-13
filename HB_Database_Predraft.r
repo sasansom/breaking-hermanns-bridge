@@ -351,6 +351,7 @@ bind_rows(
 	summarize_era(c("imperial")),
 	summarize_era(c("imperial", "hellenistic", "archaic")),
 ) %>% mutate(
+	breaks_per_line_pct = sprintf("%4.2f%%", 100 * num_breaks / num_lines),
 	lines_per_break = sprintf("%.f", num_lines / num_breaks),
 ) %>% print() %>% write_csv("break_rates_by_era.csv")
 
