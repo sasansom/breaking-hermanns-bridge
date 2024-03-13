@@ -265,7 +265,6 @@ speaker_freq %>%
 		`Lines Spoken` = num_lines_speech,
 		`%` = sprintf("%.2f%%", 100 * n / num_lines_speech),
 		`Probability` = sprintf("%.2f%%", 100 * binom_p_ge),
-		`Probability total` = sprintf("%.2f%%", 100 * (1 - pbinom(n - 1, num_lines_speech, break_rate_overall))),
 	) %>%
 	write_csv("speaker_frequency.csv", na = "") %>% print(n = 100)
 
