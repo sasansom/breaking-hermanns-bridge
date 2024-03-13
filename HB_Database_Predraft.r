@@ -121,6 +121,12 @@ break_rate_overall <- (break_rates %>%
 	summarize(num_breaks = sum(num_breaks), num_lines = sum(num_lines)) %>%
 	mutate(rate = num_breaks / num_lines))$rate[[1]]
 print(c("break rate overall", break_rate_overall))
+break_rate_archaic <- (break_rates %>%
+	left_join(WORKS) %>%
+	filter(era == "archaic") %>%
+	summarize(num_breaks = sum(num_breaks), num_lines = sum(num_lines)) %>%
+	mutate(rate = num_breaks / num_lines))$rate[[1]]
+print(c("break rate archaic", break_rate_archaic))
 
 # Output development table of break rates and caesura rates.
 break_rates %>%
@@ -174,6 +180,34 @@ table(data %>%
 	filter(word_n == caesura_word_n) %>%
 	select(breaks_hb_schein, is_speech))
 
+# Count total lines of speech by character.
+speakers <- read_csv("sedes/joined.all.speaker.csv",
+	col_types = cols(
+		work = col_factor(),
+		book_n = col_character(),
+		line_n = col_character()
+	)
+) %>%
+	mutate(
+		across(c(is_speech), ~ recode(.x, "Yes" = TRUE, "No" = FALSE)),
+		# Set book_n to NA for works that don't have separate books.
+		# https://github.com/sasansom/sedes/issues/82
+		book_n = case_when(work %in% c("Sh.", "Theog.", "W.D.", "Phaen.") ~ NA_character_, TRUE ~ book_n),
+		book_n = as.numeric(book_n)
+	) %>%
+	filter(is_speech) %>%
+	# Split out the speaker from who they are quoting.
+	mutate(
+		temp = str_split_fixed(speaker, ">", 2),
+		speaker = na_if(temp[,1], ""),
+		temp = NULL
+	) %>%
+	left_join(WORKS) %>%
+	filter(era == "archaic") %>%
+	group_by(work, book_n, line_n, speaker) %>%
+	summarize(speaker = first(speaker), .groups = "drop") %>%
+	group_by(speaker) %>%
+	summarize(num_lines_speech = n())
 # Output publication table of speaker frequency.
 WORK_NAME_ABBREV <- c(
 	"Argon." = "Argon.",
@@ -192,8 +226,7 @@ WORK_NAME_ABBREV <- c(
 speaker_freq <- data %>%
 	filter(word_n == caesura_word_n & breaks_hb_schein) %>%
 	group_by(speaker) %>% mutate(n = n()) %>% ungroup() %>%
-	select(n, speaker, work, book_n, line_n) %>%
-	arrange(desc(n), speaker, work, book_n, line_n)
+	select(n, speaker, work, book_n, line_n)
 speaker_freq %>%
 	# Split apart the speaker and whom they are quoting. Does not handle
 	# more than one level of quoting.
@@ -216,18 +249,25 @@ speaker_freq %>%
 	group_by(speaker) %>%
 	summarize(
 		n = sum(n),
-		verses = str_c(sprintf("%s\u00a0%s", WORK_NAME_ABBREV[as.character(work)], verses), collapse = "; "),
+		verses = sprintf("%d (%s)", sum(n), str_c(sprintf("%s\u00a0%s", WORK_NAME_ABBREV[as.character(work)], verses), collapse = ", ")),
 		.groups = "drop"
 	) %>%
-	arrange(desc(n), speaker) %>%
 	filter(speaker != "narrator") %>%
+	left_join(speakers) %>%
 	mutate(speaker = recode(speaker, "Aias (son of Telamon)" = "Telamonian Ajax")) %>%
-	transmute(
-		`#` = n,
-		`Speaker` = speaker,
-		`Breaks` = verses
+	mutate(
+		binom_p_ge = 1 - pbinom(n - 1, num_lines_speech, break_rate_archaic),
 	) %>%
-	write_csv("speaker_frequency.csv", na = "")
+	arrange(binom_p_ge, speaker) %>%
+	transmute(
+		`Speaker` = speaker,
+		`Breaks` = verses,
+		`Lines Spoken` = num_lines_speech,
+		`%` = sprintf("%.2f%%", 100 * n / num_lines_speech),
+		`Probability` = sprintf("%.2f%%", 100 * binom_p_ge),
+		`Probability total` = sprintf("%.2f%%", 100 * (1 - pbinom(n - 1, num_lines_speech, break_rate_overall))),
+	) %>%
+	write_csv("speaker_frequency.csv", na = "") %>% print(n = 100)
 
 # Scatterplot of breaks per caesura and caesurae per line.
 p <- ggplot(break_rates,
