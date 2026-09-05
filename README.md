@@ -1,4 +1,4 @@
-Support data and programs for the article "Breaking Hermann's Bridge".
+Support data and programs for the _CQ_ article ["Breaking Hermann's Bridge: Towards a Stylometry of Caesurae."]([url](https://www.cambridge.org/core/journals/classical-quarterly/article/breaking-hermanns-bridge-from-homer-to-nonnus-towards-a-stylometry-of-caesurae/19F2C1C0219C4C843FE9FD9C2966423A))
 
 The database spreadsheet can be found and downloaded [here](https://github.com/sasansom/breaking-hermanns-bridge/blob/3377255161137608f373336c3593640755d601fc/HB_Database.csv).
 
